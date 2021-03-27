@@ -47,6 +47,7 @@ export default function Signin() {
     //  login func
 
     const sumbitLogin = data => {
+        
 
         console.log("username :" , data.username)
         console.log("password :" , data.password)
