@@ -7,18 +7,21 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import Cookies from 'universal-cookie';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      flexGrow: 1,
+        flexGrow: 1,
+    },  
+    appBar: {
+        zIndex: theme.zIndex.drawer + 1,
     },
     menuButton: {
-      marginRight: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     title: {
-      flexGrow: 1,
+        flexGrow: 1,
     },
   }));
 
@@ -26,18 +29,22 @@ const useStyles = makeStyles((theme) => ({
 export default function Navbar() {
 
     const cookies = new Cookies()
+    const history = useHistory();
     const classes = useStyles();
     const [isLogin, setIsLogin] = useState(false)
+    const [username, setUsername] = useState()
 
 
     
     function checkToken() {
 
         let userToken = cookies.get("USER_TOKEN");
-        console.log(userToken)
+        let userName = cookies.get("USER_NAME");
+        // console.log(userToken)
         if(userToken !== undefined){
 
             setIsLogin(true)
+            setUsername(userName)
 
         }else{
 
@@ -48,6 +55,7 @@ export default function Navbar() {
     function handleLogout() {
 
         cookies.remove("USER_TOKEN" ,{ path: '/' })
+        cookies.remove("USER_NAME" ,{ path: '/' })
         window.location.href='/'
         
     }
@@ -59,8 +67,10 @@ export default function Navbar() {
       }, [])
 
     return (
+
+        
         <div className={classes.root}>
-            <AppBar position="static">
+            <AppBar position="fixed" className={classes.appBar}>
                 <Toolbar>
                 <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                     <MenuIcon />
@@ -72,9 +82,14 @@ export default function Navbar() {
                         Home
                 </Button>
                 {isLogin ? (
+                    <div>
+                    <Button color="inherit">
+                        {username}
+                    </Button>
                     <Button color="inherit" onClick={handleLogout}>
                         Logout
                     </Button>
+                    </div>
                 ):(
                     <Button color="inherit" component={Link} to="/auth/signin">
                     Login

@@ -1,4 +1,6 @@
 import React, {useState} from 'react'
+import axios from 'axios';
+import { apiLogin } from "../config/endpoint";
 
 import {
     Container,
@@ -49,30 +51,31 @@ export default function Signin() {
     const sumbitLogin = data => {
         
 
-        console.log("username :" , data.username)
-        console.log("password :" , data.password)
+        // console.log("username :" , data.username)
+        // console.log("password :" , data.password)
         
         
-            // axios.post(apiLogin,{
+            axios.post(apiLogin,{
 
-            //     username : data.username,
-            //     password: data.password,
+                username : data.username,
+                password: data.password,
     
-            // })
+            })
             
-            // .then((res) => {
-            //     // console.log(res.data)
-            //     let date = new Date(2030, 12)
-            //     cookies.set("USER_TOKEN", res.data.token, { path: "/", expires: date })
-            //     window.location.href='/'
-            //     history.push("/")
+            .then((res) => {
+                console.log(res)
+                let date = new Date(2030, 12)
+                cookies.set("USER_TOKEN", res.data.data.auth_token, { path: "/", expires: date })
+                cookies.set("USER_NAME", res.data.data.username, { path: "/", expires: date })
+                window.location.href='/'
+                // history.push("/")
     
-            // })
+            })
     
-            // .catch(error => {
-            //     console.log(error.response)
-            //     setIsLoginError(true)
-            // })
+            .catch(error => {
+                console.log(error.response)
+                setIsLoginError(true)
+            })
     }
     
     return (
