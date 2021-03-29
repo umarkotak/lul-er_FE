@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import axios from 'axios';
+import { apiRegister } from "../config/endpoint";
 
 import {
     Container,
@@ -12,10 +13,9 @@ import {
  } from '@material-ui/core'
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import { useForm, Controller } from 'react-hook-form';
-import Cookies from 'universal-cookie';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Signup() {
 
     const classes = useStyles();
-    const cookies = new Cookies()
     const history = useHistory();
     const { handleSubmit, control } = useForm();
     const [isRegisterError, setIsRegisterError] = useState(false)
@@ -50,39 +49,39 @@ export default function Signup() {
 
     const sumbitRegister = data => {
         
-        console.log("username :" , data.username)
-        console.log("email :" , data.email)
-        console.log("password :" , data.password1)
-        console.log("confirm password :" , data.password2)
+        // console.log("username :" , data.username)
+        // console.log("email :" , data.email)
+        // console.log("password :" , data.password1)
+        // console.log("confirm password :" , data.password2)
 
         if(data.password1 !== data.password2){
 
-            console.log("password didn't match")
+            // console.log("password didn't match")
             setIsFormError(true)
 
         } else {
 
             console.log('Ready')
 
-            // axios.post(apiLogin,{
+            axios.post(apiRegister,{
 
-            //     username : data.username,
-            //     email   : data.email,
-            //     password: data.password1,
+                username : data.username,
+                email   : data.email,
+                password: data.password1,
     
-            // })
+            })
             
-            // .then((res) => {
-            //     // console.log(res.data)
-            // history.push("/auth/signin")
+            .then((res) => {
+                console.log(res)
+                history.push("/auth/signin")
             
     
-            // })
+            })
     
-            // .catch(error => {
-            //     console.log(error.response)
-            //     setIsRegisterError(true)
-            // })
+            .catch(error => {
+                console.log(error)
+                setIsRegisterError(true)
+            })
         }
     }
 
