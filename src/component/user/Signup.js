@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import axios from 'axios';
-import { apiRegister } from "../config/endpoint";
+import { apiRegister } from "../config/Endpoint";
 
 import {
     Container,
