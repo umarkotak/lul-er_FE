@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import axios from 'axios';
-import { apiLogin } from "../config/endpoint";
+import { apiLogin } from "../config/Endpoint";
 
 import {
     Container,
