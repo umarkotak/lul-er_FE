@@ -13,7 +13,7 @@ import {
  } from '@material-ui/core'
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import { useForm, Controller } from 'react-hook-form';
 import Cookies from 'universal-cookie';
@@ -42,18 +42,12 @@ export default function Signin() {
 
     const classes = useStyles();
     const cookies = new Cookies()
-    const history = useHistory();
     const { handleSubmit, control } = useForm();
     const [isLoginError, setIsLoginError] = useState(false)
 
     //  login func
 
     const sumbitLogin = data => {
-        
-
-        // console.log("username :" , data.username)
-        // console.log("password :" , data.password)
-        
         
             axios.post(apiLogin,{
 
@@ -68,7 +62,6 @@ export default function Signin() {
                 cookies.set("USER_TOKEN", res.data.data.auth_token, { path: "/", expires: date })
                 cookies.set("USER_NAME", res.data.data.username, { path: "/", expires: date })
                 window.location.href='/'
-                // history.push("/")
     
             })
     
