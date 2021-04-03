@@ -10,7 +10,9 @@ import {
     Divider,
     ListItem,
     ListItemIcon,
-    ListItemText  
+    ListItemText,
+    Button,
+    Typography  
 
  } from '@material-ui/core'
 
@@ -19,6 +21,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import { ContactsOutlined } from '@material-ui/icons';
 
 
 const drawerWidth = 240;
@@ -60,10 +63,9 @@ export default function Board() {
   
   const classes = useStyles();
 
-  return (
-    <div className={classes.root}>
-      <CssBaseline />
+  const playerMenuL = (
 
+    <div>
       <Drawer
         // className={classes.drawer}
         variant="permanent"
@@ -73,26 +75,27 @@ export default function Board() {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
+          <Typography noWrap style={{ marginTop : 20, marginLeft : 20 }}>
+              Player Item
+          </Typography>
           <List>
-            {['dataA', 'dataB', 'dataC', 'dataD'].map((text, index) => (
-              <ListItem button key={text}>
+            {['item', 'item', 'item', 'item'].map((text, index) => (
+              <ListItem button key={text} onClick={() => handleUseItemPlayer()} >
                 <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                 <ListItemText primary={text} />
               </ListItem>
             ))}
           </List>
-          <Divider />
-          <List>
-            {['subData1', 'subData2', 'subData3'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
+
         </div>
       </Drawer>
+    </div>
+  )
 
+
+  const playerMenuR = (
+
+    <div>
       <Drawer
         className={classes.drawer}
         variant="permanent"
@@ -102,56 +105,79 @@ export default function Board() {
         anchor="right"
       >
         <Toolbar />
-        <div className={classes.drawerContainer}>
-          <List>
-            {['dataA', 'dataB', 'dataC', 'dataD'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {['subData1', 'subData2', 'subData3'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </div>
+          <Container justify='center'>
+            <Typography noWrap style={{ marginTop : 20 }}>
+                PLAYER TURN : 
+            </Typography>
+            <Button variant="contained" 
+                    color="secondary" 
+                    style={{ marginTop : 20 }}
+                    onClick={() => handleRollDice()}
+                    >
+              Roll Dice
+            </Button>
+            <Typography noWrap style={{ marginTop : 20 }}>
+                HISTORY MOVE
+            </Typography>
+          </Container>
       </Drawer>
+    </div>
+  )
 
+
+  const gameBoard = (
+    <div>
       <main className={classes.content}>
         <Container>
             <Grid style={{ marginTop : 100 }} justify='center'>
-              
-            {/* <Grid
-                width="100"
-                height="100"
-                rows="10"
-                cols="10"
-                style={{ marginTop : 100 }}
-                
-            > */}
             <div className={classes.box}>
 
-                {Array(64).fill().map((v, i) =>
+                {/* {Array(100).fill().map((v, i) =>
                 
                     <Paper elevation={3}>
-                        <LockOutlinedIcon />
+                        
                         <EmojiEmotionsIcon />
                         <LockOutlinedIcon />
                         <EmojiEmotionsIcon />
                     </Paper>
                 
-                )}
+                )} */}
+              <div className="board" style={{ marginLeft : 225 }}>
+                {Array(100).fill().map((v, i) =>
+                      <div className="tile">
+
+
+                        {/* <LockOutlinedIcon /> */}
+                        <h6>{i}</h6>
+                      </div>
+                  )}
+              </div>
                 
             </div>
             </Grid>
         </Container>
       </main>
+    </div>
+  )
+
+
+  // function
+
+  const handleRollDice = () => {
+
+    console.log("roll")
+  }
+
+  const handleUseItemPlayer = () => {
+
+    console.log('item')
+  }
+  return (
+    <div className={classes.root}>
+      <CssBaseline />
+      {playerMenuL}
+      {playerMenuR}
+      {gameBoard}
     </div>
   );
 }
