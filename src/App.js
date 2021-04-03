@@ -1,4 +1,4 @@
-// import './App.css';
+import './App.css';
 // Navbar
 import Navbar from "./component/utils/Navbar";
 // user

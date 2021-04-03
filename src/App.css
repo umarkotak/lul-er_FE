@@ -3,3 +3,18 @@ body {
   padding: 0;
   
 }
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, 60px);
+  grid-template-rows: repeat(10, 60px);
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+}
+
+.tile {
+  background: lightgrey;
+  text-align: center;
+  line-height: 50px;
+  border: 1px solid lightblue;
+}
