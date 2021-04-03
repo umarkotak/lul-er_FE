@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState} from 'react';
+import axios from 'axios';
+import Cookies from 'universal-cookie';
 import {
     Grid,
     Container,
@@ -62,6 +64,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Board() {
   
   const classes = useStyles();
+  const cookies = new Cookies();
+  const [board, setBoard] = useState([])
 
   const playerMenuL = (
 
@@ -114,7 +118,7 @@ export default function Board() {
                     style={{ marginTop : 20 }}
                     onClick={() => handleRollDice()}
                     >
-              Roll Dice
+              Generate Move
             </Button>
             <Typography noWrap style={{ marginTop : 20 }}>
                 HISTORY MOVE
@@ -143,12 +147,12 @@ export default function Board() {
                 
                 )} */}
               <div className="board" style={{ marginLeft : 225 }}>
-                {Array(100).fill().map((v, i) =>
-                      <div className="tile">
+                {board.map((v, i) =>
+                      <div className="tile" key={i} >
 
 
                         {/* <LockOutlinedIcon /> */}
-                        <h6>{i}</h6>
+                        <h6>{v.index}</h6>
                       </div>
                   )}
               </div>
@@ -172,6 +176,33 @@ export default function Board() {
 
     console.log('item')
   }
+
+  const FetchData = () => {
+
+    console.log(`Bearer ${cookies.get("USER_TOKEN")}`);
+    axios.get("http://luler-tangga-be.herokuapp.com/game_rooms/GAMEROOM-1617377255", {
+        headers: {
+            'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
+        }
+    })
+    .then(res => {
+        // history.push('/game');
+        console.log(res.data.data.game_board.game_fields)
+        setBoard(res.data.data.game_board.game_fields)
+    })
+    .catch(err => {
+        console.log(err);
+        return err;
+    });
+
+  }
+
+
+  useEffect(() => {
+
+    FetchData()
+
+  }, [])
   return (
     <div className={classes.root}>
       <CssBaseline />
