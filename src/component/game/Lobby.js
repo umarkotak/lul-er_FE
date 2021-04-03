@@ -115,7 +115,7 @@ export default function Lobby() {
         firstFetch();
     }, [refresh])
 
-    //setTimeout(function(){ setRefresh(refresh+1) }, 2000);
+    setTimeout(function(){ setRefresh(refresh+1) }, 5000);
 
     return (
         <div>
