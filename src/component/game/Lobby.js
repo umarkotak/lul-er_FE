@@ -120,9 +120,9 @@ export default function Lobby() {
     return (
         <div>
            {lobbyTitle}
-           
+
             {roomList}
-                
+
         </div>
     )
 }

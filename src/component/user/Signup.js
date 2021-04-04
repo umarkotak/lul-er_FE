@@ -9,7 +9,7 @@ import {
     CssBaseline,
     Button,
     Avatar
-    
+
  } from '@material-ui/core'
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -48,7 +48,7 @@ export default function Signup() {
     //  login func
 
     const sumbitRegister = data => {
-        
+
         // console.log("username :" , data.username)
         // console.log("email :" , data.email)
         // console.log("password :" , data.password1)
@@ -68,16 +68,16 @@ export default function Signup() {
                 username : data.username,
                 email   : data.email,
                 password: data.password1,
-    
+
             })
-            
+
             .then((res) => {
                 console.log(res)
                 history.push("/auth/signin")
-            
-    
+
+
             })
-    
+
             .catch(error => {
                 console.log(error)
                 setIsRegisterError(true)
@@ -114,7 +114,7 @@ export default function Signup() {
                     rules={{
                         required: 'Required'
                       }}
-    
+
                 />
 
                 <Controller
@@ -133,7 +133,7 @@ export default function Signup() {
                     rules={{
                         required: 'Required'
                       }}
-    
+
                 />
 
                 <Controller
@@ -194,7 +194,7 @@ export default function Signup() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        
+
                     >
                         Register
                     </Button>

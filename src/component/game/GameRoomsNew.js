@@ -11,7 +11,7 @@ import {
 import Cookies from 'universal-cookie';
 import { useHistory } from 'react-router-dom'
 
-export default function Home() {
+export default function GameRoomsNew() {
 
     const cookies = new Cookies();
     const history = useHistory();
@@ -21,19 +21,11 @@ export default function Home() {
         return cookies.get("USER_TOKEN");
     }
 
-    const handleLobby = () => {
+    const handleHome = () => {
         if (checkUser() === undefined){
             history.push("auth/signin")
         } else {
-            history.push("/lobby")
-        }
-    }
-
-    function handleCreateGameRoom() {
-        if (checkUser() === undefined){
-            history.push("auth/signin")
-        } else {
-            history.push("/game_rooms/new")
+            history.push("/")
         }
     }
 
@@ -56,18 +48,9 @@ export default function Home() {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick ={() => handleCreateGameRoom()}
-                        style={{ margin : "0px 10px" }}
+                        onClick ={() => handleHome()}
                     >
-                        Create Game Rooms
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick ={() => handleLobby()}
-                        style={{ margin : "0px 10px" }}
-                    >
-                        Lobby
+                        Home
                     </Button>
                </Grid>
            </Container>
