@@ -16,16 +16,16 @@ export default function App() {
   return (
 
     <Router>
+      <Navbar/>
       <div>
-        <Navbar/>
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/game" exact component={Board} />
-            <Route path="/game_rooms/new" exact component={GameRoomsNew} />
-            <Route path="/lobby" exact component={Lobby} />
-            <Route path="/auth/signin" exact component={Signin} />
-            <Route path="/auth/signup" exact component={Signup} />
-          </Switch>
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route path="/game" exact component={Board} />
+          <Route path="/game_rooms/new" exact component={GameRoomsNew} />
+          <Route path="/lobby" exact component={Lobby} />
+          <Route path="/auth/signin" exact component={Signin} />
+          <Route path="/auth/signup" exact component={Signup} />
+        </Switch>
       </div>
     </Router>
 

@@ -14,7 +14,7 @@ import {
     ListItemIcon,
     ListItemText,
     Button,
-    Typography  
+    Typography
 
  } from '@material-ui/core'
 
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function Board() {
-  
+
   const classes = useStyles();
   const cookies = new Cookies();
   const [board, setBoard] = useState([])
@@ -111,10 +111,10 @@ export default function Board() {
         <Toolbar />
           <Container justify='center'>
             <Typography noWrap style={{ marginTop : 20 }}>
-                PLAYER TURN : 
+                PLAYER TURN :
             </Typography>
-            <Button variant="contained" 
-                    color="secondary" 
+            <Button variant="contained"
+                    color="secondary"
                     style={{ marginTop : 20 }}
                     onClick={() => handleRollDice()}
                     >
@@ -137,14 +137,14 @@ export default function Board() {
             <div className={classes.box}>
 
                 {/* {Array(100).fill().map((v, i) =>
-                
+
                     <Paper elevation={3}>
-                        
+
                         <EmojiEmotionsIcon />
                         <LockOutlinedIcon />
                         <EmojiEmotionsIcon />
                     </Paper>
-                
+
                 )} */}
               <div className="board" style={{ marginLeft : 225 }}>
                 {board.map((v, i) =>
@@ -156,7 +156,7 @@ export default function Board() {
                       </div>
                   )}
               </div>
-                
+
             </div>
             </Grid>
         </Container>
