@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { getRooms, joinRoom } from '../config/Endpoint';
+import { getRooms, getRoom, joinRoom } from '../config/Endpoint';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Grid,
@@ -55,18 +55,36 @@ export default function Lobby() {
     const handleJoinRoom = (roomId) => {
         console.log(`Bearer ${cookies.get("USER_TOKEN")}`);
         axios.post(joinRoom+roomId+'/join', {
+        }, {
             headers: {
                 'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
             }
         })
         .then(res => {
-            history.push('/game');
+            history.push(`/game_rooms/${roomId}`);
+            // history.push('/game');
         })
         .catch(err => {
             console.log(err);
             return err;
         });
-        //history.push('/game');
+    }
+
+    const handleWatch = (roomId) => {
+      axios.get(getRoom+roomId,
+      {
+          headers: {
+              'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
+          }
+      })
+      .then(res => {
+          history.push(`/game_rooms/${roomId}`);
+          // history.push('/game');
+      })
+      .catch(err => {
+          console.log(err);
+          return err;
+      });
     }
 
     const lobbyTitle = (<div>
@@ -99,7 +117,8 @@ export default function Lobby() {
                             <Typography><b>Mode:</b> {room.mode}</Typography>
                             <Typography><b>Player:</b> {room.current_player_count} / {room.max_player_count}</Typography>
                             <Box textAlign='center' style={{ marginTop : 35 }}>
-                                <Button variant="contained" color="primary" onClick={() => handleJoinRoom(room.id)}>Join</Button>
+                                <Button variant="contained" color="primary" onClick={() => handleJoinRoom(room.id)} style={{marginRight: "5px"}}>Join</Button>
+                                <Button variant="contained" color="primary" onClick={() => handleWatch(room.id)}>Watch</Button>
                             </Box>
                             </Container>
                             </Paper>
