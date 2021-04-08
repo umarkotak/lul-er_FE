@@ -1,6 +1,7 @@
 import React, { useEffect, useState} from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
+import {Link, useParams, useHistory} from "react-router-dom"
 import {
     Grid,
     Container,
@@ -63,9 +64,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function GameRoomsPlay() {
 
+  let { game_room_id } = useParams();
   const classes = useStyles();
   const cookies = new Cookies();
   const [board, setBoard] = useState([])
+  const [players, set_players] = useState([])
 
   const playerMenuL = (
 
@@ -83,10 +86,10 @@ export default function GameRoomsPlay() {
               Player Item
           </Typography>
           <List>
-            {['item', 'item', 'item', 'item'].map((text, index) => (
-              <ListItem button key={text} onClick={() => handleUseItemPlayer()} >
+            {players.map((player, index) => (
+              <ListItem button key={index} onClick={() => handleUseItemPlayer()} >
                 <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={player.username} />
               </ListItem>
             ))}
           </List>
@@ -136,20 +139,14 @@ export default function GameRoomsPlay() {
             <Grid style={{ marginTop : 100 }} justify='center'>
             <div className={classes.box}>
 
-                {/* {Array(100).fill().map((v, i) =>
-
-                    <Paper elevation={3}>
-
-                        <EmojiEmotionsIcon />
-                        <LockOutlinedIcon />
-                        <EmojiEmotionsIcon />
-                    </Paper>
-
-                )} */}
               <div className="board" style={{ marginLeft : 225 }}>
                 {board.map((v, i) =>
                       <div className="tile" key={i} >
-
+                        {v.game_players.map((gp, index) => (
+                          <div key={`${v.index}-${index}`}>
+                            <small>{gp.username}</small>
+                          </div>
+                        ))}
 
                         {/* <LockOutlinedIcon /> */}
                         <h6>{v.index}</h6>
@@ -180,15 +177,17 @@ export default function GameRoomsPlay() {
   const FetchData = () => {
 
     console.log(`Bearer ${cookies.get("USER_TOKEN")}`);
-    axios.get("http://luler-tangga-be.herokuapp.com/game_rooms/GAMEROOM-1617377255", {
+    axios.get(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}`, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
         }
     })
     .then(res => {
         // history.push('/game');
+        console.log(res.data.data)
         console.log(res.data.data.game_board.game_fields)
         setBoard(res.data.data.game_board.game_fields)
+        set_players(res.data.data.game_players)
     })
     .catch(err => {
         console.log(err);
