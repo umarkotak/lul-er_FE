@@ -26,6 +26,19 @@ export default function GameRoomsPlay() {
   const cookies = new Cookies()
   const [players, set_players] = useState([])
   const [fields, set_fields] = useState([])
+  const [my_player, sey_my_player] = useState({})
+
+  useEffect(() => {
+    FetchGameRoomDetail()
+    sendPing()
+  }, [])
+
+  function sendPing() {
+    setTimeout(() => {
+      sendPing()
+      FetchGameRoomDetail()
+    }, 800)
+  }
 
   function FetchGameRoomDetail() {
     axios.get(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}`, {
@@ -44,7 +57,6 @@ export default function GameRoomsPlay() {
     })
   }
 
-  useEffect(() => {FetchGameRoomDetail()}, [])
 
   function ExecuteGenerateMove() {
     axios.post(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}/generate_move`, {}, {
@@ -78,6 +90,10 @@ export default function GameRoomsPlay() {
         console.log(err)
         return err
     })
+  }
+
+  function generateFieldBorder(field) {
+
   }
 
   return (
@@ -124,8 +140,8 @@ export default function GameRoomsPlay() {
       <Grid item xs={8}>
         <div className="row">
           {fields.map((field, field_idx) =>
-            <div key={`FIELD-${field_idx}`} className="flex-nowrap overflow-auto col-1 p-0 border" style={{height: "85px"}}>
-              {field_idx}
+            <div key={`FIELD-${field_idx}`} className={`flex-nowrap overflow-auto col-1 p-0 border ${generateFieldBorder(field)}}`} style={{height: "90px"}}>
+              {field_idx + 1}
               <hr className="m-0" />
               {field.game_players.map((field_player, field_player_idx) =>
                 <div key={`FIELD-PLAYER-${field_player_idx}`}>
@@ -138,12 +154,19 @@ export default function GameRoomsPlay() {
       </Grid>
       <Grid item xs={2}>
         <Paper className={classes.paper}>
+          <h3>Action</h3>
           <button className="btn btn-primary btn-block" onClick={() => ExecuteGenerateMove()}>
             Generate Move
           </button>
           <button className="btn btn-primary btn-block" onClick={() => ExecuteMove()}>
             Execute Move
           </button>
+
+          <hr/>
+          <h3>Item</h3>
+
+          <hr/>
+          <h3>Info</h3>
         </Paper>
       </Grid>
     </Grid>
