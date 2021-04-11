@@ -26,7 +26,7 @@ export default function GameRoomsPlay() {
   const cookies = new Cookies()
   const [players, set_players] = useState([])
   const [fields, set_fields] = useState([])
-  const [my_player, sey_my_player] = useState({})
+  const [my_player, set_my_player] = useState({})
 
   useEffect(() => {
     FetchGameRoomDetail()
@@ -37,7 +37,7 @@ export default function GameRoomsPlay() {
     setTimeout(() => {
       sendPing()
       FetchGameRoomDetail()
-    }, 800)
+    }, 1100)
   }
 
   function FetchGameRoomDetail() {
@@ -50,6 +50,7 @@ export default function GameRoomsPlay() {
         console.log(res.data.data)
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
+        set_my_player(res.data.data.my_player)
     })
     .catch(err => {
         console.log(err)
@@ -85,6 +86,7 @@ export default function GameRoomsPlay() {
         console.log(res.data.data)
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
+        set_my_player(res.data.data.my_player)
     })
     .catch(err => {
         console.log(err)
@@ -92,8 +94,10 @@ export default function GameRoomsPlay() {
     })
   }
 
-  function generateFieldBorder(field) {
-
+  function generateFieldBorder(field_type) {
+    if (field_type === "event") {
+      return "border-primary"
+    }
   }
 
   return (
@@ -140,12 +144,15 @@ export default function GameRoomsPlay() {
       <Grid item xs={8}>
         <div className="row">
           {fields.map((field, field_idx) =>
-            <div key={`FIELD-${field_idx}`} className={`flex-nowrap overflow-auto col-1 p-0 border ${generateFieldBorder(field)}}`} style={{height: "90px"}}>
-              {field_idx + 1}
+            <div key={`FIELD-${field_idx}`} className={`flex-nowrap overflow-auto col-1 p-0 border ${generateFieldBorder(field.field_type)}`} style={{height: "90px"}}>
+              {/* {field_idx + 1} */}
+              <button className="btn btn-sm btn-outline-secondary px-1 py-0">{field_idx + 1}</button>
               <hr className="m-0" />
               {field.game_players.map((field_player, field_player_idx) =>
                 <div key={`FIELD-PLAYER-${field_player_idx}`}>
-                  <small>{field_player.username}</small>
+                  <div style={{color: "blue"}}>
+                    <small><b>{field_player.username}</b></small>
+                  </div>
                 </div>
               )}
             </div>
@@ -158,6 +165,9 @@ export default function GameRoomsPlay() {
           <button className="btn btn-primary btn-block" onClick={() => ExecuteGenerateMove()}>
             Generate Move
           </button>
+          <h1 style={{textAlign: "center"}}>
+            {my_player.move_size}
+          </h1>
           <button className="btn btn-primary btn-block" onClick={() => ExecuteMove()}>
             Execute Move
           </button>
