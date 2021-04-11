@@ -1,213 +1,151 @@
-import React, { useEffect, useState} from 'react';
-import axios from 'axios';
-import Cookies from 'universal-cookie';
+import React, { useEffect, useState} from 'react'
+import axios from 'axios'
+import Cookies from 'universal-cookie'
 import {Link, useParams, useHistory} from "react-router-dom"
-import {
-    Grid,
-    Container,
-    Paper,
-    Drawer,
-    CssBaseline,
-    Toolbar,
-    List,
-    Divider,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Button,
-    Typography
-
- } from '@material-ui/core'
-
-import { makeStyles } from '@material-ui/core/styles';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import { ContactsOutlined } from '@material-ui/icons';
-
-
-const drawerWidth = 240;
+import {Grid,Container,Paper,Drawer,CssBaseline,Toolbar,List,Divider,ListItem,ListItemIcon,ListItemText,Button,Typography} from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions'
+import InboxIcon from '@material-ui/icons/MoveToInbox'
+import MailIcon from '@material-ui/icons/Mail'
+import { ContactsOutlined } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  drawerContainer: {
-    overflow: 'auto',
-  },
-  content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
-    marginRight: drawerWidth,
-    // marginLeft: drawerWidth,
   },
-  box: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.3),
-      width: theme.spacing(10),
-      height: theme.spacing(10),
-    },
+  paper: {
+    padding: theme.spacing(2),
+    color: theme.palette.text.secondary,
   },
-}));
-
-
+}))
 
 export default function GameRoomsPlay() {
-
-  let { game_room_id } = useParams();
-  const classes = useStyles();
-  const cookies = new Cookies();
-  const [board, setBoard] = useState([])
+  const classes = useStyles()
+  let { game_room_id } = useParams()
+  const cookies = new Cookies()
   const [players, set_players] = useState([])
+  const [fields, set_fields] = useState([])
 
-  const playerMenuL = (
-
-    <div>
-      <Drawer
-        // className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <Toolbar />
-        <div className={classes.drawerContainer}>
-          <Typography noWrap style={{ marginTop : 20, marginLeft : 20 }}>
-              Player Item
-          </Typography>
-          <List>
-            {players.map((player, index) => (
-              <ListItem button key={index} onClick={() => handleUseItemPlayer()} >
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={player.username} />
-              </ListItem>
-            ))}
-          </List>
-
-        </div>
-      </Drawer>
-    </div>
-  )
-
-
-  const playerMenuR = (
-
-    <div>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="right"
-      >
-        <Toolbar />
-          <Container justify='center'>
-            <Typography noWrap style={{ marginTop : 20 }}>
-                PLAYER TURN :
-            </Typography>
-            <Button variant="contained"
-                    color="secondary"
-                    style={{ marginTop : 20 }}
-                    onClick={() => handleRollDice()}
-                    >
-              Generate Move
-            </Button>
-            <Typography noWrap style={{ marginTop : 20 }}>
-                HISTORY MOVE
-            </Typography>
-          </Container>
-      </Drawer>
-    </div>
-  )
-
-
-  const gameBoard = (
-    <div>
-      <main className={classes.content}>
-        <Container>
-            <Grid style={{ marginTop : 100 }} justify='center'>
-            <div className={classes.box}>
-
-              <div className="board" style={{ marginLeft : 225 }}>
-                {board.map((v, i) =>
-                      <div className="tile" key={i} >
-                        {v.game_players.map((gp, index) => (
-                          <div key={`${v.index}-${index}`}>
-                            <small>{gp.username}</small>
-                          </div>
-                        ))}
-
-                        {/* <LockOutlinedIcon /> */}
-                        <h6>{v.index}</h6>
-                      </div>
-                  )}
-              </div>
-
-            </div>
-            </Grid>
-        </Container>
-      </main>
-    </div>
-  )
-
-
-  // function
-
-  const handleRollDice = () => {
-
-    console.log("roll")
-  }
-
-  const handleUseItemPlayer = () => {
-
-    console.log('item')
-  }
-
-  const FetchData = () => {
-
-    console.log(`Bearer ${cookies.get("USER_TOKEN")}`);
+  function FetchGameRoomDetail() {
     axios.get(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}`, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
         }
     })
     .then(res => {
-        // history.push('/game');
         console.log(res.data.data)
-        console.log(res.data.data.game_board.game_fields)
-        setBoard(res.data.data.game_board.game_fields)
         set_players(res.data.data.game_players)
+        set_fields(res.data.data.game_board.game_fields)
     })
     .catch(err => {
-        console.log(err);
-        return err;
-    });
-
+        console.log(err)
+        return err
+    })
   }
 
+  useEffect(() => {FetchGameRoomDetail()}, [])
 
-  useEffect(() => {
+  function ExecuteGenerateMove() {
+    axios.post(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}/generate_move`, {}, {
+        headers: {
+            'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
+        }
+    })
+    .then(res => {
+        console.log(res.data.data)
+        set_players(res.data.data.game_players)
+        set_fields(res.data.data.game_board.game_fields)
+    })
+    .catch(err => {
+        console.log(err)
+        return err
+    })
+  }
 
-    FetchData()
+  function ExecuteMove() {
+    axios.post(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}/execute_move`, {}, {
+        headers: {
+            'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
+        }
+    })
+    .then(res => {
+        console.log(res.data.data)
+        set_players(res.data.data.game_players)
+        set_fields(res.data.data.game_board.game_fields)
+    })
+    .catch(err => {
+        console.log(err)
+        return err
+    })
+  }
 
-  }, [])
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      {playerMenuL}
-      {playerMenuR}
-      {gameBoard}
-    </div>
-  );
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Paper className={classes.paper}>placeholder</Paper>
+      </Grid>
+
+      <Grid item xs={2}>
+        <Paper className={classes.paper}>
+          {players.map((player, idx) =>
+            <div key={`${idx}-${player.username}`} style={{align: "left"}}>
+              <b>{idx+1} - {player.username}</b>
+
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <td className="p-0" width="40%">Move Size</td>
+                    <td className="p-0">{player.move_size}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-0"  width="40%">Position</td>
+                    <td className="p-0">{player.position}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-0"  width="40%">Turn Index</td>
+                    <td className="p-0">{player.turn_index}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-0"  width="40%">Turn Status</td>
+                    <td className="p-0">{player.turn_status}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-0"  width="40%">Turn Sub Status</td>
+                    <td className="p-0">{player.turn_sub_status}</td>
+                  </tr>
+                </thead>
+              </table>
+              <hr/>
+            </div>
+          )}
+        </Paper>
+      </Grid>
+      <Grid item xs={8}>
+        <div className="row">
+          {fields.map((field, field_idx) =>
+            <div key={`FIELD-${field_idx}`} className="flex-nowrap overflow-auto col-1 p-0 border" style={{height: "85px"}}>
+              {field_idx}
+              <hr className="m-0" />
+              {field.game_players.map((field_player, field_player_idx) =>
+                <div key={`FIELD-PLAYER-${field_player_idx}`}>
+                  <small>{field_player.username}</small>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Grid>
+      <Grid item xs={2}>
+        <Paper className={classes.paper}>
+          <button className="btn btn-primary btn-block" onClick={() => ExecuteGenerateMove()}>
+            Generate Move
+          </button>
+          <button className="btn btn-primary btn-block" onClick={() => ExecuteMove()}>
+            Execute Move
+          </button>
+        </Paper>
+      </Grid>
+    </Grid>
+  )
 }
