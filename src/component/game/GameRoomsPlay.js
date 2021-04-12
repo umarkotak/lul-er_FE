@@ -27,6 +27,7 @@ export default function GameRoomsPlay() {
   const [players, set_players] = useState([])
   const [fields, set_fields] = useState([])
   const [my_player, set_my_player] = useState({})
+  const [generate_move_loading, set_generate_move_loading] = useState("false")
 
   useEffect(() => {
     FetchGameRoomDetail()
@@ -36,8 +37,7 @@ export default function GameRoomsPlay() {
   function sendPing() {
     setTimeout(() => {
       sendPing()
-      FetchGameRoomDetail()
-    }, 1100)
+    }, 2000)
   }
 
   function FetchGameRoomDetail() {
@@ -51,6 +51,10 @@ export default function GameRoomsPlay() {
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
         set_my_player(res.data.data.my_player)
+
+        setTimeout(() => {
+          FetchGameRoomDetail()
+        }, 1000)
     })
     .catch(err => {
         console.log(err)
@@ -60,6 +64,7 @@ export default function GameRoomsPlay() {
 
 
   function ExecuteGenerateMove() {
+    set_generate_move_loading("true")
     axios.post(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}/generate_move`, {}, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
@@ -69,6 +74,9 @@ export default function GameRoomsPlay() {
         console.log(res.data.data)
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
+        set_my_player(res.data.data.my_player)
+
+        set_generate_move_loading("false")
     })
     .catch(err => {
         console.log(err)
@@ -151,7 +159,7 @@ export default function GameRoomsPlay() {
               {field.game_players.map((field_player, field_player_idx) =>
                 <div key={`FIELD-PLAYER-${field_player_idx}`}>
                   <div style={{color: "blue"}}>
-                    <small><b>{field_player.username}</b></small>
+                    <small className="border rounded" style={{backgroundColor: "pink"}}><b>{field_player.username}</b></small>
                   </div>
                 </div>
               )}
@@ -165,9 +173,7 @@ export default function GameRoomsPlay() {
           <button className="btn btn-primary btn-block" onClick={() => ExecuteGenerateMove()}>
             Generate Move
           </button>
-          <h1 style={{textAlign: "center"}}>
-            {my_player.move_size}
-          </h1>
+          <GenerateMoveIndicator />
           <button className="btn btn-primary btn-block" onClick={() => ExecuteMove()}>
             Execute Move
           </button>
@@ -181,4 +187,23 @@ export default function GameRoomsPlay() {
       </Grid>
     </Grid>
   )
+
+  function GenerateMoveIndicator() {
+    if (generate_move_loading == "false") {
+      return(
+        <div>
+          <h1 style={{textAlign: "center"}}>
+            {my_player.move_size}
+          </h1>
+        </div>
+      )
+    }
+    return(
+      <div className="d-flex justify-content-center my-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    )
+  }
 }
