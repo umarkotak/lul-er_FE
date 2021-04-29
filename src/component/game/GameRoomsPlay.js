@@ -22,6 +22,10 @@ const useStyles = makeStyles((theme) => ({
 
 var lulerTanggaHost = "http://luler-tangga-be.herokuapp.com"
 // var lulerTanggaHost = "http://localhost:3000"
+var soundUrlYourTurn = `${window.location.origin}/sounds/sound-your-turn.mp3`
+var soundUrlItemUse = `${window.location.origin}/sounds/sound-item-use.mp3`
+var soundUrlVictory = `${window.location.origin}/sounds/sound-victory.mp3`
+var soundUrlClick = `${window.location.origin}/sounds/sound-click.mp3`
 
 export default function GameRoomsPlay() {
   const classes = useStyles()
@@ -30,8 +34,14 @@ export default function GameRoomsPlay() {
   const [players, set_players] = useState([])
   const [fields, set_fields] = useState([])
   const [my_player, set_my_player] = useState({})
+  const [active_player, set_active_player] = useState({})
   const [generate_move_loading, set_generate_move_loading] = useState("false")
   const [selected_field_info, set_selected_field_info] = useState({})
+  const [audioYourTurn] = useState(new Audio(soundUrlYourTurn))
+  const [audioItemUse] = useState(new Audio(soundUrlItemUse))
+  const [audioVictory] = useState(new Audio(soundUrlVictory))
+  const [audioClick] = useState(new Audio(soundUrlClick))
+  const [time_ellapsed, set_time_ellapsed] = useState(0)
 
   useEffect(() => {
     FetchGameRoomDetail()
@@ -40,9 +50,16 @@ export default function GameRoomsPlay() {
 
   function sendPing() {
     setTimeout(() => {
+      set_time_ellapsed(Date.now())
       sendPing()
     }, 2000)
   }
+
+  useEffect(() => {
+    if (active_player.username === cookies.get("USER_NAME")) {
+      audioYourTurn.play()
+    }
+  }, [time_ellapsed])
 
   function FetchGameRoomDetail() {
     if (generate_move_loading === "true") {
@@ -62,19 +79,20 @@ export default function GameRoomsPlay() {
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
         set_my_player(res.data.data.my_player)
+        set_active_player(res.data.data.active_player)
 
         setTimeout(() => {
           FetchGameRoomDetail()
         }, 1500)
     })
     .catch(err => {
-        console.log(err)
         return err
     })
   }
 
 
   function ExecuteGenerateMove() {
+    audioClick.play()
     set_generate_move_loading("true")
     axios.post(`${lulerTanggaHost}/game_rooms/${game_room_id}/generate_move`, {}, {
         headers: {
@@ -82,34 +100,32 @@ export default function GameRoomsPlay() {
         }
     })
     .then(res => {
-        console.log(res.data.data)
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
         set_my_player(res.data.data.my_player)
+        set_active_player(res.data.data.active_player)
 
         set_generate_move_loading("false")
     })
     .catch(err => {
         set_generate_move_loading("false")
-        console.log(err)
         return err
     })
   }
 
   function ExecuteMove() {
+    audioClick.play()
     axios.post(`${lulerTanggaHost}/game_rooms/${game_room_id}/execute_move`, {}, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
         }
     })
     .then(res => {
-        console.log(res.data.data)
         set_players(res.data.data.game_players)
         set_fields(res.data.data.game_board.game_fields)
         set_my_player(res.data.data.my_player)
     })
     .catch(err => {
-        console.log(err)
         return err
     })
   }
@@ -121,6 +137,7 @@ export default function GameRoomsPlay() {
   }
 
   function GetFieldInfo(field_idx) {
+    audioClick.play()
     set_selected_field_info(fields[field_idx])
   }
 
@@ -219,6 +236,7 @@ export default function GameRoomsPlay() {
               </tr>
             </thead>
           </table>
+          <hr/>
         </Paper>
       </Grid>
     </Grid>
