@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+var lulerTanggaHost = "http://luler-tangga-be.herokuapp.com"
+// var lulerTanggaHost = "http://localhost:3000"
+
 export default function GameRoomsPlay() {
   const classes = useStyles()
   let { game_room_id } = useParams()
@@ -28,6 +31,7 @@ export default function GameRoomsPlay() {
   const [fields, set_fields] = useState([])
   const [my_player, set_my_player] = useState({})
   const [generate_move_loading, set_generate_move_loading] = useState("false")
+  const [selected_field_info, set_selected_field_info] = useState({})
 
   useEffect(() => {
     FetchGameRoomDetail()
@@ -41,7 +45,14 @@ export default function GameRoomsPlay() {
   }
 
   function FetchGameRoomDetail() {
-    axios.get(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}`, {
+    if (generate_move_loading === "true") {
+      setTimeout(() => {
+        FetchGameRoomDetail()
+      }, 1500)
+      return
+    }
+
+    axios.get(`${lulerTanggaHost}/game_rooms/${game_room_id}`, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
         }
@@ -54,7 +65,7 @@ export default function GameRoomsPlay() {
 
         setTimeout(() => {
           FetchGameRoomDetail()
-        }, 1000)
+        }, 1500)
     })
     .catch(err => {
         console.log(err)
@@ -65,7 +76,7 @@ export default function GameRoomsPlay() {
 
   function ExecuteGenerateMove() {
     set_generate_move_loading("true")
-    axios.post(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}/generate_move`, {}, {
+    axios.post(`${lulerTanggaHost}/game_rooms/${game_room_id}/generate_move`, {}, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
         }
@@ -79,13 +90,14 @@ export default function GameRoomsPlay() {
         set_generate_move_loading("false")
     })
     .catch(err => {
+        set_generate_move_loading("false")
         console.log(err)
         return err
     })
   }
 
   function ExecuteMove() {
-    axios.post(`http://luler-tangga-be.herokuapp.com/game_rooms/${game_room_id}/execute_move`, {}, {
+    axios.post(`${lulerTanggaHost}/game_rooms/${game_room_id}/execute_move`, {}, {
         headers: {
             'Authorization': `Bearer ${cookies.get("USER_TOKEN")}`
         }
@@ -106,6 +118,10 @@ export default function GameRoomsPlay() {
     if (field_type === "event") {
       return "border-primary"
     }
+  }
+
+  function GetFieldInfo(field_idx) {
+    set_selected_field_info(fields[field_idx])
   }
 
   return (
@@ -154,7 +170,7 @@ export default function GameRoomsPlay() {
           {fields.map((field, field_idx) =>
             <div key={`FIELD-${field_idx}`} className={`flex-nowrap overflow-auto col-1 p-0 border ${generateFieldBorder(field.field_type)}`} style={{height: "90px"}}>
               {/* {field_idx + 1} */}
-              <button className="btn btn-sm btn-outline-secondary px-1 py-0">{field_idx + 1}</button>
+              <button className="btn btn-sm btn-outline-secondary px-1 py-0" onClick={() => GetFieldInfo(field_idx)}>{field_idx + 1}</button>
               <hr className="m-0" />
               {field.game_players.map((field_player, field_player_idx) =>
                 <div key={`FIELD-PLAYER-${field_player_idx}`}>
@@ -183,6 +199,26 @@ export default function GameRoomsPlay() {
 
           <hr/>
           <h3>Info</h3>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <td className="p-0" width="40%">Field Type</td>
+                <td className="p-0">{selected_field_info.field_type}</td>
+              </tr>
+              <tr>
+                <td className="p-0"  width="40%">Effect Type</td>
+                <td className="p-0">{selected_field_info.effect && selected_field_info.effect.effect_type}</td>
+              </tr>
+              <tr>
+                <td className="p-0"  width="40%">Value 1</td>
+                <td className="p-0">{selected_field_info.effect && selected_field_info.effect.effect_value}</td>
+              </tr>
+              <tr>
+                <td className="p-0"  width="40%">Value 2</td>
+                <td className="p-0">{selected_field_info.effect && selected_field_info.effect.effect_value_s}</td>
+              </tr>
+            </thead>
+          </table>
         </Paper>
       </Grid>
     </Grid>
@@ -200,8 +236,8 @@ export default function GameRoomsPlay() {
     }
     return(
       <div className="d-flex justify-content-center my-3">
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
+        <div className="spinner-border text-primary" role="status">
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
     )
